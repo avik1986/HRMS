@@ -1,0 +1,385 @@
+enum UserTypes{
+    Superadmin, Company_Admin, Employee
+}
+
+enum EmployeeStatus{
+    Active, Inactive, Resigned, Subatical
+}
+
+enum EmployeeRelation{
+    Internal, Contractor, Intern, External
+}
+
+
+entity Tenant {
+	
+	name String
+	createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+}
+
+entity Office {
+
+	name String
+    address String
+    city String
+    pincode Integer
+    workPhone String
+    state String
+    country String
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+    
+	
+}
+
+relationship OneToMany {
+
+	Tenant to Office{company}
+}
+
+enum EmployeeRole {
+	HRBP, Manager, IC, DepartmentHead, Management
+}
+
+enum EmployeeFunction {
+	Dev, QA, Product, Program, Sales, Marketing, HR
+}
+entity Employee {
+	
+    type UserTypes
+    status EmployeeStatus
+    name String
+    title String
+    role EmployeeRole
+    function EmployeeFunction
+    address String
+    city String
+    state String
+    country String
+    pincode Integer
+    workEmail String
+    personalEmail String
+    landline String
+    workMobile String
+    personalMobile String
+    relationType EmployeeRelation
+    joiningDate Instant
+    exitDate Instant
+    dateOfBirth Instant
+    weddingDate Instant
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+}
+
+relationship OneToMany {
+
+	Tenant to Employee{company}
+}
+
+relationship OneToMany {
+
+	Employee to Employee{manager}
+}
+
+relationship OneToMany {
+
+	Employee to Employee{hrbp}
+}
+
+relationship OneToMany {
+
+	Office to Employee{officeAddress}
+}
+
+enum AwardTypes{
+    Pat_on_back, Outstanding_innvovation, Others
+}
+
+enum AwardStatus{
+    Pending, Approved, Rejected
+}
+
+entity Award {
+
+    awardType AwardTypes
+    salutationTitle String
+    description String
+    status AwardStatus
+    isApproved Boolean
+    approvalDate Instant
+    isGiven Boolean
+    givenDate Instant
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+   
+}
+
+relationship OneToMany {
+
+	Tenant to Award{company}
+}
+
+relationship OneToMany {
+
+	Employee to Award{receiver}
+
+}
+
+relationship OneToMany {
+
+	Employee to Award{proposer}
+
+}
+
+relationship OneToMany {
+
+	Employee to Award{approver}
+
+}
+
+relationship OneToMany {
+
+	Employee to Award{givenby}
+
+}
+
+entity Kpi {
+  
+    startdate Instant
+    enddate Instant 
+    kpiTitle String
+    kpiDescription String
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+    
+}
+
+relationship OneToMany {
+
+	Tenant to Kpi{company}
+}
+
+relationship OneToMany {
+
+	Employee to Kpi{employee}
+}
+
+relationship OneToMany {
+
+	Employee to Kpi{manager}
+}
+
+entity TaskTemplate {
+
+    function EmployeeFunction
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+}
+
+relationship OneToMany {
+
+	Tenant to TaskTemplate{company}
+}
+
+enum FieldType {
+
+	Link, Smalltext, Bigtext, Datefield, Numberfield, Dropdown 
+}
+entity TaskTemplateField {
+
+    key String
+    type FieldType
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+}
+
+relationship ManyToMany {
+
+	TaskTemplate{fields} to TaskTemplateField
+}
+
+relationship OneToMany {
+
+	Tenant to TaskTemplateField{company}
+}
+
+entity TaskTemplateFieldValue {
+
+    value String
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+}
+
+relationship OneToMany {
+
+	Tenant to TaskTemplateFieldValue{company}
+}
+
+relationship OneToMany {
+
+	TaskTemplateField to TaskTemplateFieldValue{field}
+}
+
+entity Task {
+
+    taskTitle String
+    taskDesription String
+    isPublished Boolean
+    publishedDate Instant
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+}
+
+relationship OneToMany {
+
+	Tenant to Task{company}
+}
+
+relationship OneToMany {
+
+	TaskTemplate to Task{template}
+}
+
+relationship OneToMany {
+
+	Kpi to Task{kpi}
+}
+
+relationship OneToMany {
+
+	Employee to Task{employee}
+}
+
+relationship ManyToMany {
+
+	Task{peers} to Employee
+}
+
+entity TaskData {
+
+	value String
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+}
+
+relationship OneToMany {
+
+	Tenant to TaskData{company}
+}
+
+relationship OneToMany {
+
+	TaskTemplateField to TaskData{field}
+}
+
+
+relationship OneToMany {
+
+	Task to TaskData{field}
+}
+
+
+enum RatingProviderType {
+
+	Self, Peer, Manager
+
+}
+
+enum RatingType {
+
+	TaskRating, OverallRating, ConsolidatedRating, FinalHrRating
+
+}
+entity Rating {
+
+	stars Integer
+    review String
+    providerType RatingProviderType
+    ratingType RatingType
+    startDate Instant
+    endDate Instant
+    createdBy String
+    createdAt Instant
+    updatedBy String
+    updatedAt Instant
+    isActive Boolean
+}
+
+relationship OneToMany {
+
+	Tenant to Rating{company}
+}
+
+relationship OneToMany {
+
+	Employee to Rating{receiver}
+
+}
+
+relationship OneToMany {
+
+	Employee to Award{provider}
+
+}
+
+relationship OneToMany {
+
+	Task to Rating{task}
+
+}
+
+
+
+application {
+  config {
+    baseName HRMS
+    applicationType monolith
+    serverPort 9001
+    prodDatabaseType mysql
+    clientFramework react
+    clientPackageManager npm
+    authenticationType jwt
+    buildTool maven
+    enableSwaggerCodegen true
+    packageName com.rupantor.hrms
+  }
+  entities *
+  dto * with mapstruct
+  paginate * with infinite-scroll
+  service all with serviceImpl
+}
+
+
+
+
